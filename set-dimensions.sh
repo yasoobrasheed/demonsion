@@ -1,10 +1,13 @@
 #!/bin/bash
 
+# Make the script executable
+chmod +x set-dimensions.sh
+
 # Ask user for the name of the display
-read -p "Enter the name of your current display: " displayName
+read -p "Enter the name of your display: " displayName
 
 # Ask user if they want to set the dimensions themselves
-read -p "Use the current display dimensions? (y/n): " useCurrentDimensions
+read -p "Use your current display dimensions? (y/n): " useCurrentDimensions
 
 if [ "$useCurrentDimensions" = "n" ]; then
     # Ask user for the width and height
@@ -13,12 +16,12 @@ if [ "$useCurrentDimensions" = "n" ]; then
 elif [ "$useCurrentDimensions" = "y" ] || [ "$useCurrentDimensions" = "" ]; then
     # Get current display information
     displayJson=$(yabai -m query --displays)
-
+    
     # Get the active window information
     activeWindowJson=$(yabai -m query --windows --window)
-
+    
     # Get the focused display (the one with the cursor/active window)
-    if [ -n "$activeWindowJson" ]; then
+    if [ -n "$activeWindowJson" ] && [ "$activeWindowJson" != "null" ]; then
         # Get the active window's position
         windowX=$(echo "$activeWindowJson" | jq '.frame.x')
         windowY=$(echo "$activeWindowJson" | jq '.frame.y')
@@ -26,11 +29,16 @@ elif [ "$useCurrentDimensions" = "y" ] || [ "$useCurrentDimensions" = "" ]; then
         # Find the display that contains the active window
         currentDisplay=$(echo "$displayJson" | jq --arg x "$windowX" --arg y "$windowY" \
             '.[] | select(.frame.x <= ($x|tonumber) and 
-                        .frame.y <= ($y|tonumber) and 
-                        .frame.x + .frame.w >= ($x|tonumber) and 
-                        .frame.y + .frame.h >= ($y|tonumber))')
+                         .frame.y <= ($y|tonumber) and 
+                         .frame.x + .frame.w >= ($x|tonumber) and 
+                         .frame.y + .frame.h >= ($y|tonumber))')
     fi
-
+    
+    # If no active window is found or no display contains the window, use the first display
+    if [ -z "$currentDisplay" ] || [ "$currentDisplay" = "null" ]; then
+        currentDisplay=$(echo "$displayJson" | jq '.[0]')
+    fi
+    
     # Extract display dimensions
     displayWidth=$(echo "$currentDisplay" | jq '.frame.w')
     displayHeight=$(echo "$currentDisplay" | jq '.frame.h')
