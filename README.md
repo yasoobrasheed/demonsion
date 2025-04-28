@@ -1,6 +1,6 @@
 # Demonsion
 
-Terminal commands to quickly scale your windows when plugging in your laptop to your monitor and vice versa.
+Terminal commands to quickly scale your Mac windows when plugging in your laptop to your monitor and vice versa.
 
 ## Getting Started
 
