@@ -2,6 +2,10 @@
 
 Terminal commands to quickly scale your Mac windows when plugging in your laptop to your monitor and vice versa.
 
+
+https://github.com/user-attachments/assets/2f317f43-47af-40ca-852c-ab6a506d9d5a
+
+
 ## Getting Started
 
 1. `brew install koekeishiya/formulae/yabai`
